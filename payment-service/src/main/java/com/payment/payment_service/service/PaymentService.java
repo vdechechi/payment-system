@@ -7,12 +7,13 @@ import com.payment.payment_service.exception.ResourceNotFoundException;
 import com.payment.payment_service.model.Payment;
 import com.payment.payment_service.model.enums.PaymentStatus;
 import com.payment.payment_service.repository.PaymentRepository;
-import io.micrometer.common.lang.NonNull;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
@@ -80,9 +81,10 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Pagamento nao encontrado para o id: " + id));
 
-        if (payment.getStatus() != PaymentStatus.APPROVED) {
-            throw new BusinessException("Only APPROVED payments can be cancelled");
+        if (payment.getStatus() == PaymentStatus.APPROVED) {
+            throw new BusinessException("Approved payments cannot be cancelled");
         }
+        payment.setStatus(PaymentStatus.CANCELLED);
 
         payment.setStatus(PaymentStatus.APPROVED);
         payment.setUpdatedAt(LocalDateTime.now());
@@ -91,7 +93,7 @@ public class PaymentService {
         return toResponseDto(updatedPayment);
 
     }
-    
+
     private PaymentResponseDTO toResponseDto(Payment payment){
         return new PaymentResponseDTO(
                 payment.getId(),
