@@ -85,8 +85,6 @@ public class PaymentService {
             throw new BusinessException("Approved payments cannot be cancelled");
         }
         payment.setStatus(PaymentStatus.CANCELLED);
-
-        payment.setStatus(PaymentStatus.APPROVED);
         payment.setUpdatedAt(LocalDateTime.now());
 
         Payment updatedPayment = paymentRepository.save(payment);
