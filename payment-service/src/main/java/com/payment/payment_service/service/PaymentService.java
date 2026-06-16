@@ -4,6 +4,8 @@ import com.payment.payment_service.dto.payment.PaymentRequestDTO;
 import com.payment.payment_service.dto.payment.PaymentResponseDTO;
 import com.payment.payment_service.exception.BusinessException;
 import com.payment.payment_service.exception.ResourceNotFoundException;
+import com.payment.payment_service.kafka.PaymentEvent;
+import com.payment.payment_service.kafka.PaymentProducer;
 import com.payment.payment_service.model.Payment;
 import com.payment.payment_service.model.enums.PaymentStatus;
 import com.payment.payment_service.repository.PaymentRepository;
@@ -17,9 +19,11 @@ import java.util.UUID;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final PaymentProducer paymentProducer;
 
-    public PaymentService(PaymentRepository paymentRepository){
+    public PaymentService(PaymentRepository paymentRepository, PaymentProducer paymentProducer){
         this.paymentRepository = paymentRepository;
+        this.paymentProducer = paymentProducer;
     }
 
     public PaymentResponseDTO create(PaymentRequestDTO dto){
@@ -36,8 +40,21 @@ public class PaymentService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        Payment createdPayment = paymentRepository.save(payment);
-        return toResponseDto(createdPayment);
+        Payment saved = paymentRepository.save(payment);
+
+        PaymentEvent event = new PaymentEvent(
+                saved.getId(),
+                saved.getPayerId(),
+                saved.getPayeeId(),
+                saved.getAmount(),
+                saved.getType(),
+                saved.getStatus(),
+                saved.getCreatedAt()
+        );
+
+        paymentProducer.sendPaymentCreated(event);
+
+        return toResponseDto(saved);
     }
 
     public PaymentResponseDTO findById(UUID id){
