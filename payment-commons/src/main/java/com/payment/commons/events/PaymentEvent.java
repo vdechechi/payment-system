@@ -1,7 +1,7 @@
-package com.payment.payment_service.kafka;
+package com.payment.commons.events;
 
-import com.payment.payment_service.model.enums.PaymentStatus;
-import com.payment.payment_service.model.enums.PaymentType;
+import com.payment.commons.enums.PaymentStatus;
+import com.payment.commons.enums.PaymentType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;

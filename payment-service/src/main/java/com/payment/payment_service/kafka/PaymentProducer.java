@@ -1,5 +1,6 @@
 package com.payment.payment_service.kafka;
 
+import com.payment.commons.events.PaymentEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class PaymentProducer {
 
     private static final Logger log = LoggerFactory.getLogger(PaymentProducer.class);
+
     @Value("${kafka.topics.payments}")
     private String paymentsTopic;
 
@@ -19,8 +21,9 @@ public class PaymentProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendPaymentCreated(PaymentEvent event) {
+    public void sendPaymentEvent(PaymentEvent event) {
         kafkaTemplate.send(paymentsTopic, event.paymentId().toString(), event);
-        log.info("Payment event sent to Kafka: {}", event.paymentId());
+        log.info("Payment event sent to Kafka: {} - Status: {}",
+                event.paymentId(), event.status());
     }
 }

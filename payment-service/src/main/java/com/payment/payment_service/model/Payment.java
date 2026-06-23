@@ -1,7 +1,7 @@
 package com.payment.payment_service.model;
 
-import com.payment.payment_service.model.enums.PaymentStatus;
-import com.payment.payment_service.model.enums.PaymentType;
+import com.payment.commons.enums.PaymentStatus;
+import com.payment.commons.enums.PaymentType;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;

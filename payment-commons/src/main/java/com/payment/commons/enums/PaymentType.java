@@ -1,4 +1,4 @@
-package com.payment.payment_service.model.enums;
+package com.payment.commons.enums;
 
 public enum PaymentType {
     PIX,
